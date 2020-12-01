@@ -42,21 +42,21 @@ inline Mat<T, 3, 3> RotationMatrix(const RotationAxis ax, const T2 ang_rad) {
 	switch(ax) {
 	case RotationAxis::X:
 		return Mat<T, 3, 3>{
-				1., 0., 0.,
-				0., std::cos(ang_rad), std::sin(ang_rad),
-				0., -sin(ang_rad), cos(ang_rad)
+			1., 0., 0.,
+			0., std::cos(ang_rad), std::sin(ang_rad),
+			0., -sin(ang_rad), cos(ang_rad)
 		};
 	case RotationAxis::Y:
 		return Mat<T, 3, 3>{
-				std::cos(ang_rad), 0., -std::sin(ang_rad),
-				0., 1., 0.,
-				std::sin(ang_rad), 0., std::cos(ang_rad)
+			std::cos(ang_rad), 0., -std::sin(ang_rad),
+			0., 1., 0.,
+			std::sin(ang_rad), 0., std::cos(ang_rad)
 		};
 	case RotationAxis::Z:
 		return Mat<T, 3, 3>{
-				std::cos(ang_rad), std::sin(ang_rad), 0.,
-				-std::sin(ang_rad), std::cos(ang_rad), 0.,
-				0., 0., 1.
+			std::cos(ang_rad), std::sin(ang_rad), 0.,
+			-std::sin(ang_rad), std::cos(ang_rad), 0.,
+			0., 0., 1.
 		};
 	}
 }
@@ -112,12 +112,12 @@ inline Mat<T, 3, 3> attitudeMatrixFromQuat(const Quat <T2> &quat) {
 	using Q=QuatElement;
 	return Mat<T, 3, 3>{
 			nq[Q::S]*nq[Q::S]+nq[Q::X]*nq[Q::X]-nq[Q::Y]*nq[Q::Y]-
-			nq[Q::Z]*nq[Q::Z], /*00*/
+				nq[Q::Z]*nq[Q::Z], /*00*/
 			2.*(nq[Q::X]*nq[Q::Y]+nq[Q::S]*nq[Q::Z]), /*01*/
 			2.*(nq[Q::X]*nq[Q::Z]-nq[Q::S]*nq[Q::Y]), /*02*/
 			2.*(nq[Q::X]*nq[Q::Y]-nq[Q::S]*nq[Q::Z]), /*10*/
 			nq[Q::S]*nq[Q::S]-nq[Q::X]*nq[Q::X]+nq[Q::Y]*nq[Q::Y]-
-			nq[Q::Z]*nq[Q::Z], /*11*/
+				nq[Q::Z]*nq[Q::Z], /*11*/
 			2.*(nq[Q::Y]*nq[Q::Z]+nq[Q::S]*nq[Q::X]), /*12*/
 			2.*(nq[Q::X]*nq[Q::Z]+nq[Q::S]*nq[Q::Y]), /*20*/
 			2.*(nq[Q::Y]*nq[Q::Z]-nq[Q::S]*nq[Q::X]), /*21*/
@@ -140,9 +140,9 @@ inline Quat <T> quatFromAttitudeMatrix(const Mat<T2, 3, 3> &mat) {
 	static_assert(std::is_convertible<T2, T>::value, "element type is not convertible");
 	T S{.5*sqrt(1.+(mat(0, 0)+mat(1, 1)+mat(2, 2)))};
 	Vec<T, 3> V{
-			(1./(4.*S))*(mat(1, 2)-mat(2, 1)), /*X*/
-			(1./(4.*S))*(mat(2, 0)-mat(0, 2)), /*Y*/
-			(1./(4.*S))*(mat(0, 1)-mat(1, 0)) /*Z*/
+		(1./(4.*S))*(mat(1, 2)-mat(2, 1)), /*X*/
+		(1./(4.*S))*(mat(2, 0)-mat(0, 2)), /*Y*/
+		(1./(4.*S))*(mat(0, 1)-mat(1, 0)) /*Z*/
 	};
 	return Quat<T>(S, V).normalized();
 }
@@ -189,8 +189,8 @@ template<class T=double, class T2=T>
 inline Vec<T, 3> euler321FromAttitudeMatrix(const Mat<T2, 3, 3> &am) {
 	static_assert(std::is_convertible<T2, T>::value, "element type is not convertible");
 	return (180/M_PI)*Vec<T, 3>{std::atan2(am(0, 1), am(0, 0)),
-								-std::asin(am(0, 2)),
-								std::atan2(am(1, 2), am(2, 2))};
+		-std::asin(am(0, 2)),
+		std::atan2(am(1, 2), am(2, 2))};
 }
 
 /**
@@ -235,9 +235,33 @@ template<class T=double, class T2=T>
 inline Vec<T, 3> euler313FromAttitudeMatrix(const Mat<T2, 3, 3> &am) {
 	static_assert(std::is_convertible<T2, T>::value, "element type is not convertible");
 	return (180/M_PI)*Vec<T, 3>{std::atan2(am(2, 0), -am(2, 1)),
-								std::acos(am(2, 2)),
-								std::atan2(am(0, 2), am(1, 2))};
+		std::acos(am(2, 2)),
+		std::atan2(am(0, 2), am(1, 2))};
 }
+
+
+/**
+ * \brief Spherical linear interpolation of quaternions
+ * \tparam T start Quat elements type
+ * \tparam T2 end Quat elements type
+ * \tparam T3 fraction type
+ * \param start Interpolation range start quaternion
+ * \param end Interpolation range end quaternion
+ * \param t Interpolation fraction
+ * (values between 0 and 1 lie between the two quaternions)
+ * \return Interpolated quaternion
+ */
+template<class T=double, class T2=T, class T3=T, typename std::enable_if<
+std::is_scalar<T3>::value, bool
+>::type=true>
+inline Quat<T> slerp(const Quat<T> &start, const Quat<T2> &end, const T3 t) {
+	static_assert(std::is_convertible<T2, T>::value, "element type is not convertible");
+	static_assert(std::is_convertible<T3, T>::value, "element type is not convertible");
+	T angle = std::arccos(start.normalized().dot(end.normalized()));
+	return Quat<T>((std::sin((1.-t)*angle)/std::sin(angle)) * start +
+			(std::sin(t*angle)/std::sin(angle)) * end);
+}
+
 
 /**
  * @}

@@ -37,7 +37,7 @@ public:
 
 	/**
 	 * \brief Construct Quat from array
-	 * \details Array elements 0-2 are used as the vector components and array 
+	 * \details Array elements 0-2 are used as the vector components and array
 	 * element 3 is used as the scalar component.
 	 * \tparam T2 Array elements type
 	 * \param q The Array
@@ -57,7 +57,7 @@ public:
 	 * are set to 0, any excess elements are discarded.
 	 * \tparam T2 Initializer list elements type
 	 * \param il The initializer list
-	 * \pre 1. The initializer list elements type has to be convertible to the 
+	 * \pre 1. The initializer list elements type has to be convertible to the
 	 * quaternion elements type
 	 */
 	template<class T2=T>
@@ -88,7 +88,7 @@ public:
 	 * \pre 2. The vector has to have 3 elements
 	 */
 	template<class T2=T, class T3=T, typename std::enable_if<std::is_scalar<T3>::value,
-															 bool>::type=true>
+		bool>::type=true>
 	Quat(const T3 &S, const Vec<T2, 3> &V) noexcept :S(S), V(V) {
 		static_assert(std::is_convertible<T2, T>::value, "can not convert element types");
 		static_assert(std::is_convertible<T3, T>::value, "can not convert element types");
@@ -105,7 +105,7 @@ public:
 	 * \pre 2. The vector has to have 3 elements
 	 */
 	template<class T2=T, class T3=T, typename std::enable_if<std::is_scalar<T3>::value,
-															 bool>::type=true>
+		bool>::type=true>
 	Quat(const Vec<T2, 3> &V, const T3 &S) noexcept :Quat(S, V) {
 		static_assert(std::is_convertible<T2, T>::value, "can not convert element types");
 		static_assert(std::is_convertible<T3, T>::value, "can not convert element types");
@@ -118,7 +118,7 @@ public:
 	 * \pre The scalar type has to be convertible to the Quat elements type
 	 */
 	template<class T2=T, typename std::enable_if<std::is_scalar<T2>::value,
-												 bool>::type=true>
+		bool>::type=true>
 	explicit Quat(const T2 &S) noexcept :S(S) {
 		static_assert(std::is_convertible<T2, T>::value, "can not convert element types");
 	}
@@ -338,7 +338,7 @@ public:
 	 * elements type
 	 */
 	template<class T2=T, typename std::enable_if<std::is_scalar<T2>::value,
-												 bool>::type=true>
+		bool>::type=true>
 	Quat<T> &operator*=(const T2 &rhs) noexcept {
 		static_assert(std::is_convertible<T2, T>::value, "can not convert element types");
 		S*=rhs;
@@ -356,7 +356,7 @@ public:
 	 * elements type
 	 */
 	template<class T2=T, typename std::enable_if<std::is_scalar<T2>::value,
-												 bool>::type=true>
+		bool>::type=true>
 	Quat<T> &operator/=(const T2 &rhs) {
 		static_assert(std::is_convertible<T2, T>::value, "can not convert element types");
 		S/=rhs;
@@ -438,7 +438,7 @@ public:
 	 * elements type
 	 */
 	template<class T2=T, typename std::enable_if<std::is_scalar<T2>::value,
-												 bool>::type=true>
+		bool>::type=true>
 	Quat<T> operator*(const T2 &rhs) const noexcept {
 		static_assert(std::is_convertible<T2, T>::value, "can not convert element types");
 		Quat<T> scaled{};
@@ -468,7 +468,7 @@ public:
 	Quat<T> operator*(const Quat<T2> &rhs) const noexcept {
 		static_assert(std::is_convertible<T2, T>::value, "can not convert element types");
 		return Quat<T>{S*rhs.scalar()-V*rhs.vector(),
-					   rhs.vector()*S+V*rhs.scalar()+V.cross(rhs.vector())};
+			rhs.vector()*S+V*rhs.scalar()+V.cross(rhs.vector())};
 	}
 
 	/**
@@ -481,7 +481,7 @@ public:
 	 * elements type
 	 */
 	template<class T2=T, typename std::enable_if<std::is_scalar<T2>::value,
-												 bool>::type=true>
+		bool>::type=true>
 	Quat<T> operator/(const T2 &rhs) const {
 		static_assert(std::is_convertible<T2, T>::value, "can not convert element types");
 		Quat<T> scaled{};
@@ -542,6 +542,31 @@ public:
 		return conjungate()/(S*S+V.magnitude2());
 	}
 
+	/**
+	 * \brief Dot (inner) product of two quaternions
+	 * \param rhs Right hand side quaternion
+	 * \return Scalar result of dot product
+	 */
+	template<class T2=T>
+	T dot(const Quat<T2> &rhs) const noexcept {
+		static_assert(std::is_convertible<T2, T>::value,
+				"element type is not convertible");
+		return 0.5 * ((*this) * rhs.conjungate() + this->conjungate() * rhs).scalar();
+	}
+
+	/**
+	 * \brief Cross product of two quaternions
+	 * \param rhs Right hand side quaternion
+	 * \return Quaternion result of dot product
+	 */
+	template<class T2=T>
+	Quat<T> cross(Quat<T2> &rhs) const noexcept {
+		static_assert(std::is_convertible<T2, T>::value,
+				"element type is not convertible");
+		return Quat<T>(0.5 * ((*this) * rhs - rhs * (*this)));
+	}
+
+
 	// Type Info
 	/** \brief Elements Type */
 	using element_type=T;
@@ -565,7 +590,7 @@ private:
  * elements type
  */
 template<class T=double, class T2=T, typename std::enable_if<std::is_scalar<T2>::value,
-															 bool>::type=true>
+	bool>::type=true>
 inline Quat<T> operator*(const T2 &lhs, const Quat<T> &rhs) noexcept {
 	static_assert(std::is_convertible<T2, T>::value, "can not convert element types");
 	return rhs*lhs;

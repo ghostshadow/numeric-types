@@ -62,11 +62,11 @@ inline T determinant(const Mat<T, N, N> &mat) {
 template<class T, size_t N, typename std::enable_if<(N==3), bool>::type=true>
 inline T determinant(const Mat<T, N, N> &mat) {
 	return mat(0, 0)*mat(1, 1)*mat(2, 2)
-		   +mat(0, 1)*mat(1, 2)*mat(2, 0)
-		   +mat(0, 2)*mat(1, 0)*mat(2, 1)
-		   -mat(0, 2)*mat(1, 1)*mat(2, 0)
-		   -mat(0, 0)*mat(1, 2)*mat(2, 1)
-		   -mat(0, 1)*mat(1, 0)*mat(2, 2);
+		  +mat(0, 1)*mat(1, 2)*mat(2, 0)
+		  +mat(0, 2)*mat(1, 0)*mat(2, 1)
+		  -mat(0, 2)*mat(1, 1)*mat(2, 0)
+		  -mat(0, 0)*mat(1, 2)*mat(2, 1)
+		  -mat(0, 1)*mat(1, 0)*mat(2, 2);
 }
 
 /**
@@ -424,7 +424,7 @@ public:
 	 * elements type
 	 */
 	template<class T2=T, typename std::enable_if<std::is_scalar<T2>::value,
-												 bool>::type=true>
+		bool>::type=true>
 	Mat<T, R, C> &operator*=(const T2 &rhs) noexcept {
 		static_assert(std::is_convertible<T2, T>::value, "can not convert element types");
 		for(size_t r=0; r<R; ++r) {
@@ -445,7 +445,7 @@ public:
 	 * elements type
 	 */
 	template<class T2=T, typename std::enable_if<std::is_scalar<T2>::value,
-												 bool>::type=true>
+		bool>::type=true>
 	Mat<T, R, C> &operator/=(const T2 &rhs) {
 		static_assert(std::is_convertible<T2, T>::value, "can not convert element types");
 		for(size_t r=0; r<R; ++r) {
@@ -552,7 +552,7 @@ public:
 	 * matrix elements type
 	 */
 	template<class T2=T, typename std::enable_if<std::is_scalar<T2>::value,
-												 bool>::type=true>
+		bool>::type=true>
 	Mat<T, R, C> operator*(const T2 &rhs) const noexcept {
 		static_assert(std::is_convertible<T2, T>::value, "can not convert element types");
 		Mat<T, R, C> scaled{};
@@ -604,7 +604,7 @@ public:
 	 * matrix elements type
 	 */
 	template<class T2=T, typename std::enable_if<std::is_scalar<T2>::value,
-												 bool>::type=true>
+		bool>::type=true>
 	Mat<T, R, C> operator/(const T2 &rhs) const {
 		static_assert(std::is_convertible<T2, T>::value, "can not convert element types");
 		Mat<T, R, C> scaled{};
@@ -813,8 +813,8 @@ private:
  * matrix elements type
  */
 template<class T=double,
-		 class T2=T, size_t R=3, size_t C=3, typename std::enable_if<std::is_scalar<T2>::value,
-																	 bool>::type=true>
+	class T2=T, size_t R=3, size_t C=3, typename std::enable_if<std::is_scalar<T2>::value,
+	bool>::type=true>
 inline Mat<T, R, C> operator*(const T2 &lhs, const Mat<T, R, C> &rhs) noexcept {
 	static_assert(std::is_convertible<T2, T>::value, "can not convert element types");
 	return rhs*lhs;

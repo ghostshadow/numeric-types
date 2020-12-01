@@ -264,7 +264,7 @@ public:
 	 * to the vector elements type
 	 */
 	template<class T2=T, typename std::enable_if<std::is_scalar<T2>::value,
-												 bool>::type=true>
+		bool>::type=true>
 	Vec<T, N> &operator*=(const T2 &rhs) noexcept {
 		static_assert(std::is_convertible<T2, T>::value, "can not convert element types");
 		for(size_t i=0; i<N; ++i) {
@@ -283,7 +283,7 @@ public:
 	 * to the vector elements type
 	 */
 	template<class T2=T, typename std::enable_if<std::is_scalar<T2>::value,
-												 bool>::type=true>
+		bool>::type=true>
 	Vec<T, N> &operator/=(const T2 &rhs) {
 		static_assert(std::is_convertible<T2, T>::value, "can not convert element types");
 		for(size_t i=0; i<N; ++i) {
@@ -376,7 +376,7 @@ public:
 	 * to the vector elements type
 	 */
 	template<class T2=T, typename std::enable_if<std::is_scalar<T2>::value,
-												 bool>::type=true>
+		bool>::type=true>
 	Vec<T, N> operator*(const T2 &rhs) const noexcept {
 		static_assert(std::is_convertible<T2, T>::value, "can not convert element types");
 		Vec<T, N> scaled{};
@@ -415,7 +415,7 @@ public:
 	 * to the vector elements type
 	 */
 	template<class T2=T, typename std::enable_if<std::is_scalar<T2>::value,
-												 bool>::type=true>
+		bool>::type=true>
 	Vec<T, N> operator/(const T2 &rhs) const {
 		static_assert(std::is_convertible<T2, T>::value, "can not convert element types");
 		Vec<T, N> scaled{};
@@ -472,6 +472,21 @@ public:
 	}
 
 	/**
+	 * \brief Dot product
+	 * \tparam T2 Elements type of the rhs Vec
+	 * \param rhs The rhs Vec
+	 * \return The sum of the product of each corresponding element in the vector and
+	 * the rhs Vec
+	 * \pre 1. The elements type of the other Vec has to be convertible to the vector
+	 * elements type
+	 * \pre 2. The other Vec has to have as many dimensions as the vector
+	 */
+	template<class T2=T>
+	T dot(const Vec<T2, N> &rhs) const noexcept {
+		return ((*this) * rhs);
+	}
+
+	/**
 	 * \brief Cross product
 	 * \tparam T2 Elements type of the rhs Vec
 	 * \param rhs The rhs Vec
@@ -517,8 +532,8 @@ private:
  * to the vector elements type
  */
 template<class T=double,
-		 class T2=T, size_t N=3, typename std::enable_if<std::is_scalar<T2>::value,
-														 bool>::type=true>
+	class T2=T, size_t N=3, typename std::enable_if<std::is_scalar<T2>::value,
+	bool>::type=true>
 inline Vec<T, N> operator*(const T2 &lhs, const Vec<T, N> &rhs) noexcept {
 	static_assert(std::is_convertible<T2, T>::value, "can not convert element types");
 	return rhs*lhs;
