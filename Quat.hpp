@@ -510,6 +510,16 @@ public:
 	}
 
 	/**
+	 * \brief Squared euclidean norm of the quaternion (AKA magnitude squared)
+	 * \return Squared euclidean norm of the quaternion (i.e. the sum of the
+	 * squares of all its elements)
+	 */
+	T norm2() const {
+		return S*S+V.magnitude2();
+	}
+
+
+	/**
 	 * \brief The versor of the quaternion
 	 * \return A new Quat being the quaternion scaled to a magnitude of 1
 	 */
