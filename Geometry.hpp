@@ -257,7 +257,7 @@ std::is_scalar<T3>::value, bool
 inline Quat<T> slerp(const Quat<T> &start, const Quat<T2> &end, const T3 t) {
 	static_assert(std::is_convertible<T2, T>::value, "element type is not convertible");
 	static_assert(std::is_convertible<T3, T>::value, "element type is not convertible");
-	T angle = std::arccos(start.normalized().dot(end.normalized()));
+	T angle = std::acos(start.normalized().dot(end.normalized()));
 	return Quat<T>((std::sin((1.-t)*angle)/std::sin(angle)) * start +
 			(std::sin(t*angle)/std::sin(angle)) * end);
 }
