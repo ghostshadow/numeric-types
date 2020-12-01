@@ -35,7 +35,8 @@ enum class RotationAxis {
  * line vectors)
  * \pre The angle value type has to be convertible to the Mat elements type
  */
-template<class T=double, class T2=T>
+template<class T=double, class T2=T,
+	typename std::enable_if<std::is_scalar<T2>::value, bool>::type=true>
 inline Mat<T, 3, 3> RotationMatrix(const RotationAxis ax, const T2 ang_rad) {
 	static_assert(std::is_convertible<T2, T>::value,
 			"angle type has to be convertible to matrix element type");
@@ -88,8 +89,9 @@ inline Vec<T, 3> rotateVecByQuat(const Vec<T, 3> &v, const Quat <T2> &q) {
  * \pre The axis Vec elements type and the angel value type has to be convertible
  * to the Quat elements type
  */
-template<class T, class T2=T, class T3=T>
-inline Quat <T> quatFromAxisAndRoatation(const Vec <T2> &a, const T3 theta) {
+template<class T, class T2=T, class T3=T,
+	typename std::enable_if<std::is_scalar<T3>::value, bool>::type=true>
+inline Quat<T> quatFromAxisAndRoatation(const Vec<T2, 3> &a, const T3 theta) {
 	static_assert(std::is_convertible<T2, T>::value, "element type is not convertible");
 	static_assert(std::is_convertible<T3, T>::value, "element type is not convertible");
 	return Quat<T>(cos(theta/2), a.normalized()*(sin(theta/2))).normalized();
