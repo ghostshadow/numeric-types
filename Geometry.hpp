@@ -251,9 +251,8 @@ inline Vec<T, 3> euler313FromAttitudeMatrix(const Mat<T2, 3, 3> &am) {
  * (values between 0 and 1 lie between the two quaternions)
  * \return Interpolated quaternion
  */
-template<class T=double, class T2=T, class T3=T, typename std::enable_if<
-std::is_scalar<T3>::value, bool
->::type=true>
+template<class T=double, class T2=T, class T3=T,
+	typename std::enable_if<std::is_scalar<T3>::value, bool>::type=true>
 inline Quat<T> slerp(const Quat<T> &start, const Quat<T2> &end, const T3 t) {
 	static_assert(std::is_convertible<T2, T>::value, "element type is not convertible");
 	static_assert(std::is_convertible<T3, T>::value, "element type is not convertible");
@@ -261,6 +260,28 @@ inline Quat<T> slerp(const Quat<T> &start, const Quat<T2> &end, const T3 t) {
 	return Quat<T>((std::sin((1.-t)*angle)/std::sin(angle)) * start +
 			(std::sin(t*angle)/std::sin(angle)) * end);
 }
+
+/**
+ * \brief Linear interpolation of vectors
+ * \tparam N vector dimensionality
+ * (can only interpolate between vectors with same dimensions)
+ * \tparam T start Vec elements type
+ * \tparam T2 end Vec elements type
+ * \tparam T3 fraction type
+ * \param start Interpolation range start vector
+ * \param end Interpolation range end vector
+ * \param t Interpolation fraction
+ * (values between 0 and 1 lie between the two vectors)
+ * \return Interpolated vector
+ */
+template<size_t N=3, class T=double, class T2=T, class T3=T,
+	typename std::enable_if<std::is_scalar<T3>::value, bool>::type=true>
+inline Vec<T, N> lerp(const Vec<T, N> &start, const Vec<T2, N> &end, const T3 t) {
+	static_assert(std::is_convertible<T2, T>::value, "element type is not convertible");
+	static_assert(std::is_convertible<T3, T>::value, "element type is not convertible");
+	return Vec<T, N>((1-t) * start + t * end);
+}
+
 
 
 /**
