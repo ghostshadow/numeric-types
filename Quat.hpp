@@ -359,6 +359,8 @@ public:
 		bool>::type=true>
 	Quat<T> &operator/=(const T2 &rhs) {
 		static_assert(std::is_convertible<T2, T>::value, "can not convert element types");
+		if(rhs == 0)
+			throw std::domain_error("Division by 0");
 		S/=rhs;
 		V/=rhs;
 		return *this;
@@ -484,6 +486,8 @@ public:
 		bool>::type=true>
 	Quat<T> operator/(const T2 &rhs) const {
 		static_assert(std::is_convertible<T2, T>::value, "can not convert element types");
+		if(rhs == 0)
+			throw std::domain_error("Division by 0");
 		Quat<T> scaled{};
 		scaled.scalar()=S/rhs;
 		scaled.vector()=V/rhs;
@@ -506,16 +510,16 @@ public:
 	 * sum of the squares of all its elements)
 	 */
 	T norm() const {
-		return std::sqrt(S*S+V.magnitude2());
+		return std::sqrt(S*S+V.norm2());
 	}
 
 	/**
-	 * \brief Squared euclidean norm of the quaternion (AKA magnitude squared)
+	 * \brief Squared euclidean norm of the quaternion
 	 * \return Squared euclidean norm of the quaternion (i.e. the sum of the
 	 * squares of all its elements)
 	 */
 	T norm2() const {
-		return S*S+V.magnitude2();
+		return S*S+V.norm2();
 	}
 
 
@@ -524,7 +528,10 @@ public:
 	 * \return A new Quat being the quaternion scaled to a magnitude of 1
 	 */
 	Quat<T> versor() const {
-		return Quat<T>(*this)/norm();
+		T n = norm();
+		if(n == 0)
+			throw std::domain_error("Normalization of zero quaternion");
+		return Quat<T>(*this)/n;
 	}
 
 	/**
@@ -539,7 +546,10 @@ public:
 	 * \return lvalue reference of self
 	 */
 	Quat<T> &normalize() {
-		(*this)/=norm();
+		T n = norm();
+		if(n == 0)
+			throw std::domain_error("Normalization of zero quaternion");
+		(*this)/=n;
 		return *this;
 	}
 

@@ -84,18 +84,24 @@ inline T determinant(const Mat<T, N, N> &mat) {
 template<class T, size_t N, typename std::enable_if<N!=1, bool>::type=true>
 inline Mat<T, N, N> inverse(const Mat<T, N, N> &mat) {
 	static_assert(N>=1, "inverse does not make sense for zero-sized matrix");
+	T det = mat.determinant();
+	if(det == 0)
+		throw std::domain_error("Inverse of zero determinant matrix");
 	Mat<T, N, N> coef{};
 	for(size_t r=0; r<N; ++r) {
 		for(size_t c=0; c<N; ++c) {
 			coef(r, c)=(1-2*(r%2))*(1-2*(c%2))*mat.subMatrix(r, c).determinant();
 		}
 	}
-	return coef.transposed()/mat.determinant();
+	return coef.transposed()/det;
 }
 
 // documented in NxN case
 template<class T, size_t N, typename std::enable_if<(N==1), bool>::type=true>
 inline Mat<T, N, N> inverse(const Mat<T, N, N> &mat) {
+	T det = mat(0, 0);
+	if(det == 0)
+		throw std::domain_error("Inverse of zero determinant matrix");
 	return Mat<T, 1, 1>{1./mat(0, 0)};
 };
 
@@ -448,6 +454,8 @@ public:
 		bool>::type=true>
 	Mat<T, R, C> &operator/=(const T2 &rhs) {
 		static_assert(std::is_convertible<T2, T>::value, "can not convert element types");
+		if(rhs == 0)
+			throw std::domain_error("Division by 0");
 		for(size_t r=0; r<R; ++r) {
 			for(size_t c=0; c<C; ++c) {
 				v[c+r*C]/=rhs;
@@ -607,6 +615,8 @@ public:
 		bool>::type=true>
 	Mat<T, R, C> operator/(const T2 &rhs) const {
 		static_assert(std::is_convertible<T2, T>::value, "can not convert element types");
+		if(rhs == 0)
+			throw std::domain_error("Division by 0");
 		Mat<T, R, C> scaled{};
 		for(size_t r=0; r<R; ++r) {
 			for(size_t c=0; c<C; ++c) {

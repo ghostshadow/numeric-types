@@ -286,6 +286,8 @@ public:
 		bool>::type=true>
 	Vec<T, N> &operator/=(const T2 &rhs) {
 		static_assert(std::is_convertible<T2, T>::value, "can not convert element types");
+		if(rhs == 0)
+			throw std::domain_error("Division by 0");
 		for(size_t i=0; i<N; ++i) {
 			v[i]/=rhs;
 		}
@@ -418,6 +420,8 @@ public:
 		bool>::type=true>
 	Vec<T, N> operator/(const T2 &rhs) const {
 		static_assert(std::is_convertible<T2, T>::value, "can not convert element types");
+		if(rhs == 0)
+			throw std::domain_error("Division by 0");
 		Vec<T, N> scaled{};
 		for(size_t i=0; i<N; ++i) {
 			scaled[i]=v[i]/rhs;
@@ -447,6 +451,13 @@ public:
 	}
 
 	/**
+	 * \brief Squared magnitude
+	 * \return Squared magnitude (i.e. the sum of each element squared)
+	 */
+	T norm2() const noexcept { return magnitude2(); }
+
+
+	/**
 	 * \brief Euclidean norm of the vector (AKA magnitude of the vector)
 	 * \return Euclidean norm of the vector
 	 */
@@ -458,7 +469,10 @@ public:
 	 * as the vector
 	 */
 	Vec<T, N> normalized() const {
-		return Vec<T, N>(*this)/norm();
+		T n = norm();
+		if(n == 0)
+			throw std::domain_error("Norm of zero length vector");
+		return Vec<T, N>(*this)/n;
 	};
 
 	/**
@@ -467,7 +481,10 @@ public:
 	 * \return lvalue reference of self
 	 */
 	Vec<T, N> &normalize() {
-		(*this)/=norm();
+		T n = norm();
+		if(n == 0)
+			throw std::domain_error("Norm of zero length vector");
+		(*this)/=n;
 		return *this;
 	}
 
