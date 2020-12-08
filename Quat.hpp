@@ -212,6 +212,7 @@ public:
 		case QuatElement::S:
 			return S;
 		}
+		__builtin_unreachable();
 	}
 
 	/**
@@ -230,6 +231,7 @@ public:
 		case QuatElement::S:
 			return S;
 		}
+		__builtin_unreachable();
 	}
 
 	/**
