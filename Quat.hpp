@@ -8,6 +8,14 @@
 #include <cmath>
 #include "Vec.hpp"
 
+#if defined __has_builtin
+#if __has_builtin(__builtin_unreachable)
+#define _UNREACHABLE __builtin_unreachable();
+#endif
+#elif defined __GNU__ || defined __GNUC__
+#define _UNREACHABLE __builtin_unreachable();
+#endif
+
 namespace NumericTypes {
 /* ********** Quaternion ********* */
 
@@ -212,7 +220,7 @@ public:
 		case QuatElement::S:
 			return S;
 		}
-		__builtin_unreachable();
+		_UNREACHABLE
 	}
 
 	/**
@@ -231,7 +239,7 @@ public:
 		case QuatElement::S:
 			return S;
 		}
-		__builtin_unreachable();
+		_UNREACHABLE
 	}
 
 	/**
