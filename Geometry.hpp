@@ -89,11 +89,13 @@ inline Vec<T, 3> rotateVecByQuat(const Vec<T, 3> &v, const Quat <T2> &q) {
  * \pre The axis Vec elements type and the angel value type has to be convertible
  * to the Quat elements type
  */
-template<class T, class T2=T, class T3=T,
+template<class T=double, class T2=T, class T3=T,
 	typename std::enable_if<std::is_scalar<T3>::value, bool>::type=true>
 inline Quat<T> quatFromAxisAndRoatation(const Vec<T2, 3> &a, const T3 theta) {
 	static_assert(std::is_convertible<T2, T>::value, "element type is not convertible");
 	static_assert(std::is_convertible<T3, T>::value, "element type is not convertible");
+	if(a.norm2() == 0)
+		throw std::domain_error("Invalid rotation axis");
 	return Quat<T>(cos(theta/2), a.normalized()*(sin(theta/2))).normalized();
 }
 
